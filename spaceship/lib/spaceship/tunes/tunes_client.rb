@@ -297,8 +297,6 @@ module Spaceship
             "appletvos"
           when "MAC_OS"
             "osx"
-          when "VISION_OS"
-            "xros"
           when "IOS"
             "ios"
           else
@@ -632,6 +630,25 @@ module Spaceship
     # @!group AppAnalytics
     #####################################################
 
+    def retention_analytics(app_ids, start_time, end_time)
+      data = {
+        adamId: app_ids,
+        dimensionFilters: [],
+        endTime: end_time,
+        frequency: "DAY",
+        startTime: start_time
+      }
+
+      r = request(:post) do |req|
+        req.url("https://appstoreconnect.apple.com/analytics/api/v1/data/retention")
+        req.body = data.to_json
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['X-Requested-By'] = 'appstoreconnect.apple.com'
+      end
+
+      data = parse_response(r)
+    end
+
     def time_series_analytics(app_ids, measures, start_time, end_time, frequency, view_by)
       data = {
         adamId: app_ids,
@@ -653,6 +670,71 @@ module Spaceship
       data = parse_response(r)
     end
 
+    # time_series_analytics拓展
+    def time_series_analytics_extend(app_ids, measures, dimension_filters, start_time, end_time, frequency, view_by)
+      data = {
+        adamId: app_ids,
+        dimensionFilters: dimension_filters,
+        endTime: end_time,
+        frequency: frequency,
+        group: group_for_view_by(view_by, measures),
+        measures: measures,
+        startTime: start_time
+      }
+
+      r = request(:post) do |req|
+        req.url("https://appstoreconnect.apple.com/analytics/api/v1/data/time-series")
+        req.body = data.to_json
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['X-Requested-By'] = 'appstoreconnect.apple.com'
+      end
+
+      data = parse_response(r)
+    end
+
+    # time_series_analytics_v2拓展
+    def time_series_analytics_v2(app_ids, measures, dimension_filters, start_time, end_time, frequency)
+      data = {
+        adamId: app_ids,
+        dimensionFilters: dimension_filters,
+        endTime: end_time,
+        frequency: frequency,
+        measures: measures,
+        startTime: start_time
+      }
+
+      r = request(:post) do |req|
+        req.url("https://appstoreconnect.apple.com/analytics/api/v2/data/time-series")
+        req.body = data.to_json
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['X-Requested-By'] = 'appstoreconnect.apple.com'
+      end
+
+      data = parse_response(r)
+    end
+
+    # dimension_values
+    def dimension_values(app_ids, measures, dimensions, dimension_filters, start_time, end_time, frequency)
+      data = {
+        adamId: app_ids,
+        dimensions: dimensions,
+        dimensionFilters: dimension_filters,
+        endTime: end_time,
+        frequency: frequency,
+        measures: measures,
+        startTime: start_time
+      }
+
+      r = request(:post) do |req|
+        req.url("https://appstoreconnect.apple.com/analytics/api/v2/data/dimension-values")
+        req.body = data.to_json
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['X-Requested-By'] = 'appstoreconnect.apple.com'
+      end
+
+      data = parse_response(r)
+    end
+
     #####################################################
     # @!group Pricing
     #####################################################
@@ -661,7 +743,7 @@ module Spaceship
       r = request(:get, "ra/apps/#{app_id}/pricing/intervals")
       data = parse_response(r, 'data')
 
-      # preOrder isn't needed for the request and has some
+      # preOrder isn't needed for for the request and has some
       # values that can cause a failure (invalid dates) so we are removing it
       data.delete('preOrder')
 
@@ -1013,7 +1095,7 @@ module Spaceship
     end
 
     #####################################################
-    # @!group CandidateBuilds
+    # @!group CandiateBuilds
     #####################################################
 
     def candidate_builds(app_id, version_id)

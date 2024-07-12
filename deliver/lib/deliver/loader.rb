@@ -3,6 +3,7 @@ require_relative 'app_screenshot'
 require_relative 'app_screenshot_validator'
 require_relative 'upload_metadata'
 require_relative 'languages'
+require 'pp'
 
 module Deliver
   module Loader
@@ -31,21 +32,71 @@ module Deliver
 
       def self.available_languages
         # 2020-08-24 - Available locales are not available as an endpoint in App Store Connect
-        # Update with Spaceship::Tunes.client.available_languages.sort (as long as endpoint is available)
+        # Update with Spaceship::Tunes.client.available_languages.sort (as long as endpoint is avilable)
         Deliver::Languages::ALL_LANGUAGES
       end
 
+      def self.available_languages_translate
+        %w[阿拉伯文 加泰罗尼亚文 捷克文 丹麦文 德文 希腊文 澳大利亚英文 加拿大英文 英国英文 美国英文 西班牙文 墨西哥文 芬兰文 加拿大法文 法文 希伯来文 北印度文 克罗地亚文 匈牙利文 印尼文 意大利文 日文 韩文 马来文 荷兰文 挪威文 波兰文 巴西文 葡萄牙文 罗马尼亚文 俄文 斯洛伐克文 瑞典文 泰文 土耳其文 乌克兰文 越南文 简体中文 繁体中文]
+      end
+
       def self.allowed_directory_names_with_case
-        available_languages + SPECIAL_DIR_NAMES
+        available_languages + available_languages_translate + SPECIAL_DIR_NAMES
+      end
+
+      def self.allowed_language_map
+        lang = {
+          "美国英文"=>"en-US",
+          "英国英文"=>"en-GB",
+          "加拿大法文"=>"fr-CA",
+          "加拿大英文"=>"en-CA",
+          "澳大利亚英文"=>"en-AU",
+          "法文"=>"fr-FR",
+          "芬兰文"=>"fi",
+          "俄文"=>"ru",
+          "简体中文"=>"zh-Hans",
+          "繁体中文"=>"zh-Hant",
+          "丹麦文"=>"da",
+          "日文"=>"ja",
+          "韩文"=>"ko",
+          "德文"=>"de-DE",
+          "意大利文"=>"it",
+          "瑞典文"=>"sv",
+          "荷兰文"=>"nl-NL",
+          "巴西文"=>"pt-BR",
+          "葡萄牙文"=>"pt-PT",
+          "西班牙文"=>"es-ES",
+          "墨西哥文"=>"es-MX",
+          "越南文"=>"vi",
+          "希腊文"=>"el",
+          "印尼文"=>"id",
+          "马来文"=>"ms",
+          "土耳其文"=>"tr",
+          "泰文"=>"th",
+          "挪威文"=>"no",
+          "克罗地亚文"=>"hr",
+          "捷克文"=>"cs",
+          "匈牙利文"=>"hu",
+          "波兰文"=>"pl",
+          "罗马尼亚文"=>"ro",
+          "斯洛伐克文"=>"sk",
+          "乌克兰文"=>"uk",
+          "北印度文"=>"hi",
+          "加泰罗尼亚文"=>"ca",
+          "阿拉伯文"=>"ar-SA",
+          "希伯来文"=>"he"
+        }
       end
 
       # @param path [String] A directory path otherwise this initializer fails
-      # @param nested [Boolean] Whether given path is nested of another special directory.
+      # @param nested [Boolan] Whether given path is nested of another special directory.
       #  This affects `expandable?` to return `false` when this set to `true`.
       def initialize(path, nested: false)
         raise(ArgumentError, "Given path must be a directory path - #{path}") unless File.directory?(path)
         @path = path
-        @language = self.class.available_languages.find { |lang| basename.casecmp?(lang) }
+        language = self.class.available_languages_translate.find { |lang| basename.casecmp?(lang) }
+        language_translate = self.class.allowed_language_map[language]
+        @language = language_translate
         @nested = nested
       end
 
@@ -132,9 +183,15 @@ module Deliver
 
       if !ignore_validation && !rejected_folders.empty?
         rejected_folders = rejected_folders.map(&:basename)
-        UI.user_error!("Unsupported directory name(s) for screenshots/metadata in '#{root}': #{rejected_folders.join(', ')}" \
-                       "\nValid directory names are: #{LanguageFolder.allowed_directory_names_with_case}" \
-                       "\n\nEnable 'ignore_language_directory_validation' to prevent this validation from happening")
+
+        ## {TODO} 更换语言
+        # UI.user_error!("Unsupported directory name(s) for screenshots/metadata in '#{root}': #{rejected_folders.join(', ')}" \
+        #                "\nValid directory names are: #{LanguageFolder.allowed_directory_names_with_case}" \
+        #                "\n\nEnable 'ignore_language_directory_validation' to prevent this validation from happening")
+
+        UI.error("上传目录'#{root}'中存在错误的目录名: #{rejected_folders.join(', ')}")
+        UI.error("正确的目录名应为: #{LanguageFolder.allowed_directory_names_with_case}")
+
       end
 
       # Expand selected_folders for the special directories

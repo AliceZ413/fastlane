@@ -89,6 +89,24 @@ module Spaceship
         app_crashes_interval(start_t, end_t)
       end
 
+      def app_retention_interval(start_t, end_t)
+        client.retention_analytics([apple_id], start_t, end_t)
+      end
+
+      def app_measure_interval_extend(start_t, end_t, measure, dimension_filters = [], view_by = nil)
+        client.time_series_analytics_extend([apple_id], [measure], dimension_filters, start_t, end_t, "DAY", view_by)
+      end
+
+      # v2/data/time-series
+      def app_measure_interval_v2(start_t, end_t, measure, frequency, dimension_filters = [])
+        client.time_series_analytics_v2([apple_id], measure, dimension_filters, start_t, end_t, frequency)
+      end
+
+      # v2/data/dimension-values
+      def dimension_values(start_t, end_t, measure, frequency, dimensions = [], dimension_filters = [])
+        client.dimension_values([apple_id], measure, dimensions, dimension_filters, start_t, end_t, frequency)
+      end
+
       def app_measure_interval(start_t, end_t, measure, view_by = nil)
         client.time_series_analytics([apple_id], [measure], start_t, end_t, "DAY", view_by)
       end

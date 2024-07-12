@@ -80,3 +80,5 @@ xcuserdata/
 
 # Dotenv
 .env
+
+.history/
