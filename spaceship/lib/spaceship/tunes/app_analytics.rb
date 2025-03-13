@@ -89,8 +89,8 @@ module Spaceship
         app_crashes_interval(start_t, end_t)
       end
 
-      def app_retention_interval(start_t, end_t)
-        client.retention_analytics([apple_id], start_t, end_t)
+      def app_retention_interval(start_t, end_t, dimension_filters = [])
+        client.retention_analytics([apple_id], dimension_filters, start_t, end_t)
       end
 
       def app_measure_interval_extend(start_t, end_t, measure, dimension_filters = [], view_by = nil)

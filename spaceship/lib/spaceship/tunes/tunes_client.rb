@@ -630,10 +630,10 @@ module Spaceship
     # @!group AppAnalytics
     #####################################################
 
-    def retention_analytics(app_ids, start_time, end_time)
+    def retention_analytics(app_ids, dimension_filters, start_time, end_time)
       data = {
         adamId: app_ids,
-        dimensionFilters: [],
+        dimensionFilters: dimension_filters,
         endTime: end_time,
         frequency: "DAY",
         startTime: start_time
