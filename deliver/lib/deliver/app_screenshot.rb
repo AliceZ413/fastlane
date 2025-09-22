@@ -23,8 +23,8 @@ module Deliver
       IOS_61 = "iOS-6.1-in"
       # iPhone 14 Plus, iPhone 13 Pro Max, iPhone 12 Pro Max, iPhone 11 Pro Max, iPhone 11, iPhone XS Max, iPhone XR
       IOS_65 = "iOS-6.5-in"
-      # iPhone 14 Pro Max
-      IOS_67 = "iOS-6.7-in"
+      # iPhone Air, iPhone 17 Pro Max, iPhone 16 Pro Max, iPhone 16 Plus, iPhone 15 Pro Max, iPhone 15 Plus, iPhone 14 Pro Max
+      IOS_67 = "iOS-6.7-in" # 6.7-inch was already merged to 6.9-inch in 2025
 
       # iPad
       IOS_IPAD = "iOS-iPad"
@@ -271,8 +271,12 @@ module Deliver
       # because it has same resolution as IOS_IPAD_PRO and will clobber
       return {
         ScreenSize::IOS_67 => [
+          [1260, 2736],
+          [2736, 1260],
           [1290, 2796],
-          [2796, 1290]
+          [2796, 1290],
+          [1320, 2868],
+          [2868, 1320]
         ],
         ScreenSize::IOS_65 => [
           [1242, 2688],
@@ -328,13 +332,15 @@ module Deliver
           [1668, 2388],
           [2388, 1668]
         ],
-        ScreenSize::IOS_IPAD_PRO => [
+        ScreenSize::IOS_IPAD_PRO => [ # 12.9-inch in 2025
           [2732, 2048],
           [2048, 2732],
         ],
-        ScreenSize::IOS_IPAD_13 => [
+        ScreenSize::IOS_IPAD_13 => [ # 13.0-inch in 2025
           [2752, 2064],
           [2064, 2752],
+          [2048, 2732],
+          [2732, 2048]
         ],
         ScreenSize::MAC => [
           [1280, 800],
