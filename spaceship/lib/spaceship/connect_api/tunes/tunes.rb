@@ -1242,6 +1242,181 @@ module Spaceship
           params = tunes_request_client.build_params(filter: filter, includes: includes)
           tunes_request_client.get("#{Version::V1}/reviewRejections", params)
         end
+
+        #
+        # App Custom Product Page
+        # As of 2025-11-25
+        #
+
+        # 获取 App 的所有 Custom Product Pages 列表
+        def get_app_custom_product_pages(app_id: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+          params = tunes_request_client.build_params(filter: filter, includes: includes, limit: limit, sort: sort)
+          tunes_request_client.get("#{Version::V1}/apps/#{app_id}/appCustomProductPages", params)
+        end
+
+        # 获取单个 App Custom Product Page
+        def get_app_custom_product_page(app_id: nil, app_custom_product_page_id: nil, includes: nil)
+          params = tunes_request_client.build_params(filter: nil, includes: includes, limit: nil, sort: nil)
+          tunes_request_client.get("#{Version::V1}/apps/#{app_id}/appCustomProductPages/#{app_custom_product_page_id}", params)
+        end
+
+        # 创建 App Custom Product Page
+        def post_app_custom_product_page(app_id: nil, attributes: {})
+          body = {
+            data: {
+              type: "appCustomProductPages",
+              attributes: attributes,
+              relationships: {
+                app: {
+                  data: {
+                    type: "apps",
+                    id: app_id
+                  }
+                },
+                appCustomProductPageVersions: {
+                  data: [
+                    {
+                      type: 'appCustomProductPageVersions',
+                      id: '${new-appCustomProductPageVersion-id}',
+                    }
+                  ]
+                }
+              }
+            },
+            included: [
+              {
+                type: 'appCustomProductPageVersions',
+                id: '${new-appCustomProductPageVersion-id}',
+                relationships: {
+                  appCustomProductPage: {},
+                  appCustomProductPageLocalizations: {
+                    data: [
+                      {
+                        type: 'appCustomProductPageLocalizations',
+                        id: '${new-appCustomProductPageLocalization-id}',
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                type: 'appCustomProductPageLocalizations',
+                id: '${new-appCustomProductPageLocalization-id}',
+                attributes: {
+                  locale: 'en-US',
+                  promotionalText: '',
+                }
+              }
+            ]
+          }
+          tunes_request_client.post("#{Version::V1}/appCustomProductPages", body)
+        end
+
+        # 获取 App Custom Product Page Versions
+        def get_app_custom_product_page_versions(app_custom_product_page_id: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+          params = tunes_request_client.build_params(filter: filter, includes: includes, limit: limit, sort: sort)
+          tunes_request_client.get("#{Version::V1}/appCustomProductPages/#{app_custom_product_page_id}/appCustomProductPageVersions", params)
+        end
+
+        # 获取单个 App Custom Product Page Version
+        def get_app_custom_product_page_version(app_custom_product_page_version_id: nil, includes: nil)
+          params = tunes_request_client.build_params(filter: nil, includes: includes, limit: nil, sort: nil)
+          tunes_request_client.get("#{Version::V1}/appCustomProductPageVersions/#{app_custom_product_page_version_id}", params)
+        end
+
+        # 创建 App Custom Product Page Version
+        def post_app_custom_product_page_version(app_custom_product_page_id: nil, attributes: {})
+          body = {
+            data: {
+              type: "appCustomProductPageVersions",
+              attributes: attributes,
+              relationships: {
+                appCustomProductPage: {
+                  data: {
+                    type: "appCustomProductPages",
+                    id: app_custom_product_page_id
+                  }
+                }
+              }
+            }
+          }
+          tunes_request_client.post("#{Version::V1}/appCustomProductPageVersions", body)
+        end
+
+        # 获取 App Custom Product Page Version Localizations
+        def get_app_custom_product_page_version_localizations(app_custom_product_page_version_id: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+          params = tunes_request_client.build_params(filter: filter, includes: includes, limit: limit, sort: sort)
+          tunes_request_client.get("#{Version::V1}/appCustomProductPageVersions/#{app_custom_product_page_version_id}/appCustomProductPageLocalizations", params)
+        end
+
+        # 获取单个 App Custom Product Page Version Localization
+        def get_app_custom_product_page_version_localization(app_custom_product_page_version_localization_id: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+          params = tunes_request_client.build_params(filter: filter, includes: includes, limit: limit, sort: sort)
+          tunes_request_client.get("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}", params)
+        end
+
+        # 创建 App Custom Product Page Version Localization
+        def post_app_custom_product_page_version_localization(app_custom_product_page_version_id: nil, attributes: {})
+          body = {
+            data: {
+              type: "appCustomProductPageLocalizations",
+              attributes: attributes,
+              relationships: {
+                appCustomProductPageVersion: {
+                  data: {
+                    type: "appCustomProductPageVersions",
+                    id: app_custom_product_page_version_id
+                  }
+                }
+              }
+            }
+          }
+          tunes_request_client.post("#{Version::V1}/appCustomProductPageLocalizations", body)
+        end
+
+        # 更新 App Custom Product Page Version Localization
+        def patch_app_custom_product_page_version_localization(app_custom_product_page_version_localization_id: nil, attributes: {})
+          body = {
+            data: {
+              type: "appCustomProductPageLocalizations",
+              id: app_custom_product_page_version_localization_id,
+              attributes: attributes
+            }
+          }
+          tunes_request_client.patch("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}", body)
+        end
+
+        # 删除 App Custom Product Page Version Localization
+        def delete_app_custom_product_page_version_localization(app_custom_product_page_version_localization_id: nil)
+          params = tunes_request_client.build_params(filter: nil, includes: nil, limit: nil, sort: nil)
+          tunes_request_client.delete("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}", params)
+        end
+
+        # 获取 App Custom Product Page Version Localization 的截图集
+        def get_app_screenshot_sets_for_custom_product_page(app_custom_product_page_version_localization_id: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+          params = tunes_request_client.build_params(filter: filter, includes: includes, limit: limit, sort: sort)
+          tunes_request_client.get("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}/appScreenshotSets", params)
+        end
+
+        # 为 Custom Product Page 创建截图集
+        def post_app_screenshot_set_for_custom_product_page(app_custom_product_page_version_localization_id: nil, attributes: {})
+          body = {
+            data: {
+              type: "appScreenshotSets",
+              attributes: attributes,
+              relationships: {
+                appCustomProductPageLocalization: {
+                  data: {
+                    type: "appCustomProductPageLocalizations",
+                    id: app_custom_product_page_version_localization_id
+                  }
+                }
+              }
+            }
+          }
+
+          tunes_request_client.post("#{Version::V1}/appScreenshotSets", body)
+        end
       end
     end
   end

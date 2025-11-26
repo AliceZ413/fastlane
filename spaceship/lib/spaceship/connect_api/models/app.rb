@@ -482,6 +482,33 @@ module Spaceship
           client.delete_user_visible_apps(user_id: user_id, app_ids: [id])
         end
       end
+
+      #
+      # App Custom Product Pages
+      #
+      def get_app_custom_product_pages(client: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+        client ||= Spaceship::ConnectAPI
+        if limit.nil?
+          resps = client.get_app_custom_product_pages(app_id: id, filter: filter, includes: includes, limit: limit, sort: sort).all_pages
+          
+          return resps.flat_map(&:to_models)
+        else
+          resp = client.get_app_custom_product_pages(app_id: id, filter: filter, includes: includes, limit: limit, sort: sort)
+          return resp.to_models
+        end
+      end
+
+      def get_app_custom_product_page(client: nil, app_custom_product_page_id: nil, includes: nil)
+        client ||= Spaceship::ConnectAPI
+        resp = client.get_app_custom_product_page(app_id: id, app_custom_product_page_id: app_custom_product_page_id, includes: includes)
+        return resp.to_models.first
+      end
+
+      def create_app_custom_product_page(client: nil, attributes: {})
+        client ||= Spaceship::ConnectAPI
+        resp = client.post_app_custom_product_page(app_id: id, attributes: attributes)
+        return resp.to_models.first
+      end
     end
   end
 end
