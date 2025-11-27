@@ -188,6 +188,14 @@ module Spaceship
         return client.get_app_screenshot_set(app_screenshot_set_id: id, includes: "appScreenshots").first
       end
 
+      # DEBUG
+      def upload_uncomplete_screenshot(client: nil, path: nil, wait_for_processing: true)
+        client ||= Spaceship::ConnectAPI
+        screenshot = Spaceship::ConnectAPI::AppScreenshot.create_uncomplete_one(client: client, app_screenshot_set_id: id, path: path, wait_for_processing: wait_for_processing)
+
+        return screenshot
+      end
+
       #
       # App Custom Product Page
       #

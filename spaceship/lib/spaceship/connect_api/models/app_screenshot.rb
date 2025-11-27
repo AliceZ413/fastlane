@@ -180,6 +180,63 @@ module Spaceship
         return screenshot
       end
 
+      # DEBUG
+      def self.create_uncomplete_one(client: nil, app_screenshot_set_id: nil, path: nil, wait_for_processing: true)
+        client ||= Spaceship::ConnectAPI
+        require 'faraday'
+
+        filename = File.basename(path)
+        filesize = File.size(path)
+        bytes = File.binread(path)
+
+        post_attributes = {
+          fileSize: filesize,
+          fileName: filename
+        }
+
+        # Create placeholder to upload screenshot
+        begin
+          screenshot = client.post_app_screenshot(
+            app_screenshot_set_id: app_screenshot_set_id,
+            attributes: post_attributes
+          ).first
+        rescue => error
+          # Sometimes creating a screenshot with the web session App Store Connect API
+          # will result in a false failure. The response will return a 503 but the database
+          # insert will eventually go through.
+          #
+          # When this is observed, we will poll until we find the matching screenshot that
+          # is awaiting for upload and file size
+          #
+          # https://github.com/fastlane/fastlane/pull/16842
+          time = Time.now.to_i
+
+          timeout_minutes = (ENV["SPACESHIP_SCREENSHOT_UPLOAD_TIMEOUT"] || 20).to_i
+
+          loop do
+            # This error handling needs to be revised since any error occurred can reach here.
+            # It should handle errors based on what status code is.
+            puts("Waiting for screenshots to appear before uploading. This is unlikely to be recovered unless it's 503 error. error=\"#{error}\"")
+            sleep(30)
+
+            screenshots = Spaceship::ConnectAPI::AppScreenshotSet
+                          .get(client: client, app_screenshot_set_id: app_screenshot_set_id)
+                          .app_screenshots
+
+            screenshot = screenshots.find do |s|
+              s.awaiting_upload? && s.file_size == filesize
+            end
+
+            break if screenshot
+
+            time_diff = Time.now.to_i - time
+            raise error if time_diff >= (60 * timeout_minutes)
+          end
+        end
+
+        return screenshot
+      end
+
       def delete!(client: nil, filter: {}, includes: nil, limit: nil, sort: nil)
         client ||= Spaceship::ConnectAPI
         client.delete_app_screenshot(app_screenshot_id: id)
