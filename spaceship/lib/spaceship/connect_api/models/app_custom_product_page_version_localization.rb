@@ -1,7 +1,7 @@
-require_relative '../model'
-require_relative './app_preview_set'
-require_relative './app_screenshot_set'
-require_relative '../../errors'
+require_relative "../model"
+require_relative "./app_preview_set"
+require_relative "./app_screenshot_set"
+require_relative "../../errors"
 
 module Spaceship
   class ConnectAPI
@@ -18,7 +18,7 @@ module Spaceship
         "locale" => "locale",
         "promotionalText" => "promotional_text",
         "appScreenshotSets" => "app_screenshot_sets",
-        "appPreviewSets" => "app_preview_sets"
+        "appPreviewSets" => "app_preview_sets",
       })
 
       def self.type
@@ -36,7 +36,7 @@ module Spaceship
           filter: filter,
           includes: includes,
           limit: limit,
-          sort: sort
+          sort: sort,
         )
         return resp.to_models
       rescue
@@ -50,7 +50,7 @@ module Spaceship
           filter: filter,
           includes: includes,
           limit: limit,
-          sort: sort
+          sort: sort,
         )
         return resp.to_models
       rescue
@@ -62,7 +62,7 @@ module Spaceship
         attributes = reverse_attr_mapping(attributes)
         client.patch_app_custom_product_page_version_localization(
           app_custom_product_page_version_localization_id: id,
-          attributes: attributes
+          attributes: attributes,
         )
       rescue
         raise Spaceship::AppStoreLocalizationError, @locale
@@ -71,7 +71,7 @@ module Spaceship
       def delete!(client: nil, filter: {}, includes: nil, limit: nil, sort: nil)
         client ||= Spaceship::ConnectAPI
         client.delete_app_custom_product_page_version_localization(
-          app_custom_product_page_version_localization_id: id
+          app_custom_product_page_version_localization_id: id,
         )
       rescue
         raise Spaceship::AppStoreLocalizationError, @locale
@@ -105,13 +105,13 @@ module Spaceship
       def get_app_screenshot_sets(client: nil, filter: {}, includes: "appScreenshots", limit: nil, sort: nil)
         client ||= Spaceship::ConnectAPI
         return Spaceship::ConnectAPI::AppScreenshotSet.all(
-          client: client,
-          app_custom_product_page_version_localization_id: id,
-          filter: filter,
-          includes: includes,
-          limit: limit,
-          sort: sort
-        )
+                 client: client,
+                 app_custom_product_page_version_localization_id: id,
+                 filter: filter,
+                 includes: includes,
+                 limit: limit,
+                 sort: sort,
+               )
       rescue
         raise Spaceship::AppStoreScreenshotError, @locale
       end
@@ -120,11 +120,34 @@ module Spaceship
         client ||= Spaceship::ConnectAPI
         resp = client.post_app_screenshot_set_for_custom_product_page(
           app_custom_product_page_version_localization_id: id,
-          attributes: attributes
+          attributes: attributes,
         )
         return resp.to_models.first
       rescue
         raise Spaceship::AppStoreScreenshotError, @locale
+      end
+
+      #
+      # Search Keywords
+      #
+      def create_search_keywords(client: nil, data: nil)
+        client ||= Spaceship::ConnectAPI
+        resp = client.post_search_keywords_for_custom_product_page_localization(
+          app_custom_product_page_version_localization_id: id,
+          data: data,
+        )
+      rescue
+        raise Spaceship::AppStoreLocalizationError, @locale
+      end
+
+      def delete_search_keywords(client: nil, data: nil)
+        client ||= Spaceship::ConnectAPI
+        resp = client.delete_search_keywords_for_custom_product_page_localization(
+          app_custom_product_page_version_localization_id: id,
+          data: data,
+        )
+      rescue
+        raise Spaceship::AppStoreLocalizationError, @locale
       end
     end
   end
