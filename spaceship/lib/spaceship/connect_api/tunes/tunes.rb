@@ -1420,16 +1420,16 @@ module Spaceship
 
         # 删除 search keywords
         def delete_search_keywords_for_custom_product_page_localization(app_custom_product_page_version_localization_id: nil, data: nil)
-          body = {
-            data: data
-          }
-          tunes_request_client.delete("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}/relationships/searchKeywords", nil, body)
+            body = {
+              data: data.map { |k| { "type": "appKeywords", "id": k } }
+            }
+            tunes_request_client.delete("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}/relationships/searchKeywords", nil, body)
         end
 
         # 新增 search keywords
-        def post_search_keywords_for_custom_product_page_localization(app_custom_product_page_version_localization_id: nil: data: nil)
+        def post_search_keywords_for_custom_product_page_localization(app_custom_product_page_version_localization_id: nil, data: nil)
           body = {
-            data: data
+            data: data.map { |k| { "type": "appKeywords", "id": k } }
           }
           tunes_request_client.post("#{Version::V1}/appCustomProductPageLocalizations/#{app_custom_product_page_version_localization_id}/relationships/searchKeywords", body)
         end

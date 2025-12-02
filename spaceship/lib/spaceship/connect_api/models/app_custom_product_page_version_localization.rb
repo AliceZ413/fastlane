@@ -1,6 +1,7 @@
 require_relative "../model"
 require_relative "./app_preview_set"
 require_relative "./app_screenshot_set"
+require_relative "./app_keywords"
 require_relative "../../errors"
 
 module Spaceship
@@ -13,12 +14,14 @@ module Spaceship
 
       attr_accessor :app_screenshot_sets
       attr_accessor :app_preview_sets
+      attr_accessor :search_keywords
 
       attr_mapping({
         "locale" => "locale",
         "promotionalText" => "promotional_text",
         "appScreenshotSets" => "app_screenshot_sets",
         "appPreviewSets" => "app_preview_sets",
+        "searchKeywords" => "search_keywords"
       })
 
       def self.type

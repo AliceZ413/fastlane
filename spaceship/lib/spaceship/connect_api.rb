@@ -74,6 +74,7 @@ require 'spaceship/connect_api/models/territory'
 require 'spaceship/connect_api/models/app_custom_product_page'
 require 'spaceship/connect_api/models/app_custom_product_page_version'
 require 'spaceship/connect_api/models/app_custom_product_page_version_localization'
+require 'spaceship/connect_api/models/app_keywords'
 
 require 'spaceship/connect_api/models/resolution_center_message'
 require 'spaceship/connect_api/models/resolution_center_thread'
