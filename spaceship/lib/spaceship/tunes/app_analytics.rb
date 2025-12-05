@@ -102,9 +102,18 @@ module Spaceship
         client.time_series_analytics_v2([apple_id], measure, dimension_filters, start_t, end_t, frequency)
       end
 
+      # v1/data/timeseries
+      def app_timeseries_interval(start_t, end_t, measure, dimension_filters = [], view_by = nil)
+        client.timeseries_analytics([apple_id], [measure], dimension_filters, start_t, end_t, "DAY", view_by)
+      end
+
       # v2/data/dimension-values
       def dimension_values(start_t, end_t, measure, frequency, dimensions = [], dimension_filters = [])
         client.dimension_values([apple_id], measure, dimensions, dimension_filters, start_t, end_t, frequency)
+      end
+
+      def dimension_values_v1(start_t, end_t, measure, frequency, dimensions = [], dimension_filters = [])
+        client.dimension_values_v1([apple_id], measure, dimensions, dimension_filters, start_t, end_t, frequency)
       end
 
       def app_measure_interval(start_t, end_t, measure, view_by = nil)
